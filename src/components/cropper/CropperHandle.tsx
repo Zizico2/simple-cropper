@@ -2,22 +2,23 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperHandleElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperHandleProps {
   ref?: React.Ref<CropperHandleElement>;
   action?:
-    | "select"
-    | "move"
-    | "scale"
-    | "n-resize"
-    | "e-resize"
-    | "s-resize"
-    | "w-resize"
-    | "ne-resize"
-    | "nw-resize"
-    | "se-resize"
-    | "sw-resize"
-    | "none";
+  | "select"
+  | "move"
+  | "scale"
+  | "n-resize"
+  | "e-resize"
+  | "s-resize"
+  | "w-resize"
+  | "ne-resize"
+  | "nw-resize"
+  | "se-resize"
+  | "sw-resize"
+  | "none";
   plain?: boolean;
   slottable?: boolean;
   themeColor?: string;
@@ -36,6 +37,12 @@ export default function CropperHandle({
   className,
   style,
 }: CropperHandleProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+
   return (
     <cropper-handle
       ref={ref}

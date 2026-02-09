@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   CropperCanvas,
   CropperCrosshair,
@@ -29,9 +29,9 @@ export default function Home() {
   const selectionRef = useRef<CropperSelectionElement>(null);
   const imageRef = useRef<CropperImageElement>(null);
 
-  useEffect(() => {
-    import("cropperjs");
-  }, []);
+  // useEffect(() => {
+  //   import("cropperjs");
+  // }, []);
 
   // Handler: Receives both URL and File object
   const handleImageSelected = (url: string, file: File) => {

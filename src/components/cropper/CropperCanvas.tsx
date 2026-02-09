@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperCanvasElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperCanvasProps {
   ref?: React.Ref<CropperCanvasElement>;
@@ -32,6 +33,12 @@ export default function CropperCanvas({
   onActionmove,
   onActionend,
 }: CropperCanvasProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+
   return (
     <cropper-canvas
       ref={ref}

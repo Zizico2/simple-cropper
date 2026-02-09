@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperSelectionElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperSelectionProps {
   ref?: React.Ref<CropperSelectionElement>;
@@ -50,6 +51,12 @@ export default function CropperSelection({
   style,
   onChange,
 }: CropperSelectionProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+
   return (
     <cropper-selection
       ref={ref}

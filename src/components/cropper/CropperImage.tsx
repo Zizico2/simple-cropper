@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperImageElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperImageProps {
   ref?: React.Ref<CropperImageElement>;
@@ -48,6 +49,12 @@ export default function CropperImage({
   style,
   onTransform,
 }: CropperImageProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+
   return (
     <cropper-image
       ref={ref}

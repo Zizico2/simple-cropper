@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperViewerElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperViewerProps {
   ref?: React.Ref<CropperViewerElement>;
@@ -22,6 +23,12 @@ export default function CropperViewer({
   className,
   style,
 }: CropperViewerProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+
   return (
     <cropper-viewer
       ref={ref}

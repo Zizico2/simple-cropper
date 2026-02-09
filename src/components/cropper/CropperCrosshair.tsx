@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperCrosshairElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperCrosshairProps {
   ref?: React.Ref<CropperCrosshairElement>;
@@ -22,6 +23,12 @@ export default function CropperCrosshair({
   className,
   style,
 }: CropperCrosshairProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+  
   return (
     <cropper-crosshair
       ref={ref}

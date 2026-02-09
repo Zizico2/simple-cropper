@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperGridElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperGridProps {
   ref?: React.Ref<CropperGridElement>;
@@ -32,6 +33,12 @@ export default function CropperGrid({
   className,
   style,
 }: CropperGridProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+
   return (
     <cropper-grid
       ref={ref}

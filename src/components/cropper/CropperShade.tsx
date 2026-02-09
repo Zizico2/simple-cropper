@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import type { CropperShadeElement } from "@/types/cropper-elements";
+import { useCropperInit } from "./useCropperInit";
 
 interface CropperShadeProps {
   ref?: React.Ref<CropperShadeElement>;
@@ -30,6 +31,12 @@ export default function CropperShade({
   className,
   style,
 }: CropperShadeProps) {
+  const isReady = useCropperInit();
+
+  if (!isReady) {
+    return <>{/* fallback */} </>;
+  }
+
   return (
     <cropper-shade
       ref={ref}
