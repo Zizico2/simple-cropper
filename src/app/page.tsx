@@ -12,7 +12,7 @@ import {
   type CropperSelectionElement,
   CropperShade,
   CropperViewer,
-} from "../components";
+} from "../components/cropper";
 import ImageUpload from "../components/ImageUpload";
 import styles from "./page.module.css";
 
