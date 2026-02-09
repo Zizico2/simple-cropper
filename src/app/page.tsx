@@ -1,74 +1,108 @@
-'use client';
-import { useState } from 'react';
-import Cropper, { type Area, type Point } from 'react-easy-crop';
+// src/app/page.tsx
+'use client'
+
+import { useState, useRef } from 'react'
+import Image from 'next/image';
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  Crop,
+  PixelCrop,
+} from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 import ImageUpload from '../components/ImageUpload';
 import { getCroppedImg } from '../utils/canvasUtils';
 import styles from './page.module.css';
-import Image from 'next/image';
+
+// Helper to center the crop initially
+function centerAspectCrop(
+  mediaWidth: number,
+  mediaHeight: number,
+  aspect: number,
+) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: '%',
+        width: 90,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight,
+    ),
+    mediaWidth,
+    mediaHeight,
+  )
+}
 
 export default function Home() {
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState<number>(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null)
+  const [crop, setCrop] = useState<Crop>()
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null)
+  const [croppedImage, setCroppedImage] = useState<string | null>(null)
 
-  const onCropComplete = (_croppedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  };
+  // 1. Create a ref to access the image element directly
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { width, height } = e.currentTarget
+    // Start with a centered crop
+    setCrop(centerAspectCrop(width, height, 16 / 9))
+  }
 
   const showCroppedImage = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
-    try {
-      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
-      setCroppedImage(croppedImage);
-    } catch (e) {
-      console.error(e);
+    // 2. Ensure we have the image, the crop data, and the canvas ref
+    if (
+      imgRef.current &&
+      completedCrop?.width &&
+      completedCrop?.height
+    ) {
+      try {
+        const croppedImgUrl = await getCroppedImg(
+          imgRef.current, // Pass the HTMLImageElement
+          completedCrop,  // Pass the PixelCrop
+        )
+        setCroppedImage(croppedImgUrl)
+      } catch (e) {
+        console.error(e)
+      }
     }
-  };
+  }
 
   const handleReset = () => {
-    setImageSrc(null);
-    setCroppedImage(null);
-    setZoom(1);
-  };
+    setImageSrc(null)
+    setCroppedImage(null)
+  }
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>Next.js Image Cropper</h1>
+      <h1 className={styles.title}>Accurate Image Cropper</h1>
 
       {!imageSrc ? (
         <ImageUpload onImageSelected={setImageSrc} />
       ) : (
         <div>
-          <div className={styles.cropContainer}>
-            <Cropper
-              image={imageSrc}
+          <div className={styles.cropContainer} style={{ height: 'auto' }}>
+            {/* 3. Pass the ref to the image inside ReactCrop */}
+            <ReactCrop
               crop={crop}
-              zoom={zoom}
-              aspect={4 / 3}
-              onCropChange={setCrop}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
-            />
+              onChange={(_, percentCrop) => setCrop(percentCrop)}
+              onComplete={(c) => setCompletedCrop(c)}
+              aspect={undefined} // Free-form cropping
+            >
+              {/* biome-ignore lint/performance/noImgElement: The standard img tag is required for the cropper ref to work correctly */}
+              <img
+                ref={imgRef}
+                src={imageSrc}
+                alt="Upload"
+                onLoad={onImageLoad}
+                // Ensure image scales but doesn't overflow
+                style={{ maxWidth: '100%', maxHeight: '70vh' }}
+              />
+            </ReactCrop>
           </div>
 
           <div className={styles.controls}>
-            <div className={styles.sliderContainer}>
-              <label htmlFor="zoom" className={styles.sliderLabel}>Zoom</label>
-              <input
-                id="zoom"
-                type="range"
-                value={zoom}
-                min={1}
-                max={3}
-                step={0.1}
-                aria-labelledby="Zoom"
-                onChange={(e) => setZoom(Number(e.target.value))}
-                className={styles.slider}
-              />
-            </div>
-
             <div className={styles.buttonGroup}>
               <button
                 onClick={handleReset}
@@ -91,14 +125,15 @@ export default function Home() {
 
       {croppedImage && (
         <div className={styles.result}>
-          <h3 style={{ marginBottom: '10px' }}>Result</h3>
+          <h3>Result</h3>
           <Image
             src={croppedImage}
-            alt="Cropped"
-            width={croppedAreaPixels?.width}
-            height={croppedAreaPixels?.height}
+            alt="Cropped result"
+            width={completedCrop?.width}
+            height={completedCrop?.height}
             className={styles.resultImg}
-            unoptimized
+            unoptimized // 👈 Mandatory for Blob URLs
+            style={{ width: '100%', height: 'auto' }} // 👈 Keeps it responsive
           />
           <a
             href={croppedImage}
@@ -110,5 +145,5 @@ export default function Home() {
         </div>
       )}
     </main>
-  );
+  )
 }

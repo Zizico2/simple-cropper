@@ -1,52 +1,60 @@
-// src/utils/canvasUtils.ts
-import type { Area } from 'react-easy-crop';
-
-export const createImage = (url: string): Promise<HTMLImageElement> =>
-    new Promise((resolve, reject) => {
-        const image = new Image();
-        image.addEventListener('load', () => resolve(image));
-        image.addEventListener('error', (error) => reject(error));
-        image.setAttribute('crossOrigin', 'anonymous');
-        image.src = url;
-    });
+import type { PixelCrop } from 'react-image-crop'
 
 export async function getCroppedImg(
-    imageSrc: string,
-    pixelCrop: Area
-): Promise<string | null> {
-    const image = await createImage(imageSrc);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    image: HTMLImageElement,
+    crop: PixelCrop
+): Promise<string> {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
 
     if (!ctx) {
-        return null;
+        throw new Error('No 2d context')
     }
 
-    // Set canvas size to match the cropped area
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+    // 1. Calculate scaling (Screen Size vs Original Image Size)
+    const scaleX = image.naturalWidth / image.width
+    const scaleY = image.naturalHeight / image.height
 
-    // Draw the cropped image onto the canvas
+    // 2. Handle High DPI screens (Retina)
+    const pixelRatio = window.devicePixelRatio
+    canvas.width = Math.floor(crop.width * scaleX * pixelRatio)
+    canvas.height = Math.floor(crop.height * scaleY * pixelRatio)
+
+    ctx.scale(pixelRatio, pixelRatio)
+    ctx.imageSmoothingQuality = 'high'
+
+    // 3. Calculate crop position relative to the original image
+    const cropX = crop.x * scaleX
+    const cropY = crop.y * scaleY
+
+    // 4. Move the canvas origin to the top-left of the crop area
+    ctx.save()
+    ctx.translate(-cropX, -cropY)
+
+    // 5. Draw the full image
+    // (We translate the canvas so only the cropped part is visible)
     ctx.drawImage(
         image,
-        pixelCrop.x,
-        pixelCrop.y,
-        pixelCrop.width,
-        pixelCrop.height,
         0,
         0,
-        pixelCrop.width,
-        pixelCrop.height
-    );
+        image.naturalWidth,
+        image.naturalHeight,
+        0,
+        0,
+        image.naturalWidth,
+        image.naturalHeight,
+    )
 
-    // Return as a Blob URL
+    ctx.restore()
+
+    // 6. Output the result
     return new Promise((resolve, reject) => {
         canvas.toBlob((file) => {
             if (file) {
-                resolve(URL.createObjectURL(file));
+                resolve(URL.createObjectURL(file))
             } else {
-                reject(new Error('Canvas is empty'));
+                reject(new Error('Canvas is empty'))
             }
-        }, 'image/jpeg');
-    });
+        }, 'image/jpeg')
+    })
 }
