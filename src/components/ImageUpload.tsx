@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useDropzone } from 'react-dropzone';
-import styles from './ImageUpload.module.css';
+import { useDropzone } from "react-dropzone";
+import styles from "./ImageUpload.module.css";
 
 interface ImageUploadProps {
   onImageSelected: (url: string) => void;
@@ -18,14 +18,14 @@ export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': [] },
-    multiple: false
+    accept: { "image/*": [] },
+    multiple: false,
   });
 
   return (
-    <div 
-      {...getRootProps()} 
-      className={`${styles.dropzone} ${isDragActive ? styles.active : ''}`}
+    <div
+      {...getRootProps()}
+      className={`${styles.dropzone} ${isDragActive ? styles.active : ""}`}
     >
       <input {...getInputProps()} />
       {isDragActive ? (

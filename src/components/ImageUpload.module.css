@@ -6,7 +6,9 @@
   cursor: pointer;
   background-color: #f9f9f9;
   color: #666;
-  transition: border-color 0.2s ease-in-out, background-color 0.2s;
+  transition:
+    border-color 0.2s ease-in-out,
+    background-color 0.2s;
 }
 
 .dropzone:hover {

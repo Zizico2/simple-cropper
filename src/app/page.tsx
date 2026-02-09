@@ -1,18 +1,18 @@
 // src/app/page.tsx
-'use client'
+"use client";
 
-import { useState, useRef } from 'react'
-import Image from 'next/image';
+import Image from "next/image";
+import { useRef, useState } from "react";
 import ReactCrop, {
+  type Crop,
   centerCrop,
   makeAspectCrop,
-  Crop,
-  PixelCrop,
-} from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
-import ImageUpload from '../components/ImageUpload';
-import { getCroppedImg } from '../utils/canvasUtils';
-import styles from './page.module.css';
+  type PixelCrop,
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import ImageUpload from "../components/ImageUpload";
+import { getCroppedImg } from "../utils/canvasUtils";
+import styles from "./page.module.css";
 
 // Helper to center the crop initially
 function centerAspectCrop(
@@ -23,7 +23,7 @@ function centerAspectCrop(
   return centerCrop(
     makeAspectCrop(
       {
-        unit: '%',
+        unit: "%",
         width: 90,
       },
       aspect,
@@ -32,47 +32,43 @@ function centerAspectCrop(
     ),
     mediaWidth,
     mediaHeight,
-  )
+  );
 }
 
 export default function Home() {
-  const [imageSrc, setImageSrc] = useState<string | null>(null)
-  const [crop, setCrop] = useState<Crop>()
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null)
-  const [croppedImage, setCroppedImage] = useState<string | null>(null)
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
+  const [croppedImage, setCroppedImage] = useState<string | null>(null);
 
   // 1. Create a ref to access the image element directly
-  const imgRef = useRef<HTMLImageElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const { width, height } = e.currentTarget
+    const { width, height } = e.currentTarget;
     // Start with a centered crop
-    setCrop(centerAspectCrop(width, height, 16 / 9))
-  }
+    setCrop(centerAspectCrop(width, height, 16 / 9));
+  };
 
   const showCroppedImage = async () => {
     // 2. Ensure we have the image, the crop data, and the canvas ref
-    if (
-      imgRef.current &&
-      completedCrop?.width &&
-      completedCrop?.height
-    ) {
+    if (imgRef.current && completedCrop?.width && completedCrop?.height) {
       try {
         const croppedImgUrl = await getCroppedImg(
           imgRef.current, // Pass the HTMLImageElement
-          completedCrop,  // Pass the PixelCrop
-        )
-        setCroppedImage(croppedImgUrl)
+          completedCrop, // Pass the PixelCrop
+        );
+        setCroppedImage(croppedImgUrl);
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
     }
-  }
+  };
 
   const handleReset = () => {
-    setImageSrc(null)
-    setCroppedImage(null)
-  }
+    setImageSrc(null);
+    setCroppedImage(null);
+  };
 
   return (
     <main className={styles.container}>
@@ -82,7 +78,7 @@ export default function Home() {
         <ImageUpload onImageSelected={setImageSrc} />
       ) : (
         <div>
-          <div className={styles.cropContainer} style={{ height: 'auto' }}>
+          <div className={styles.cropContainer} style={{ height: "auto" }}>
             {/* 3. Pass the ref to the image inside ReactCrop */}
             <ReactCrop
               crop={crop}
@@ -97,7 +93,7 @@ export default function Home() {
                 alt="Upload"
                 onLoad={onImageLoad}
                 // Ensure image scales but doesn't overflow
-                style={{ maxWidth: '100%', maxHeight: '70vh' }}
+                style={{ maxWidth: "100%", maxHeight: "70vh" }}
               />
             </ReactCrop>
           </div>
@@ -133,7 +129,7 @@ export default function Home() {
             height={completedCrop?.height}
             className={styles.resultImg}
             unoptimized // 👈 Mandatory for Blob URLs
-            style={{ width: '100%', height: 'auto' }} // 👈 Keeps it responsive
+            style={{ width: "100%", height: "auto" }} // 👈 Keeps it responsive
           />
           <a
             href={croppedImage}
@@ -145,5 +141,5 @@ export default function Home() {
         </div>
       )}
     </main>
-  )
+  );
 }
