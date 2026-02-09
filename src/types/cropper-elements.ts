@@ -23,7 +23,9 @@ export interface CropperImageElement extends HTMLElement {
   skewable: boolean;
   slottable: boolean;
   translatable: boolean;
-  $ready(callback?: (image: HTMLImageElement) => void): Promise<HTMLImageElement>;
+  $ready(
+    callback?: (image: HTMLImageElement) => void,
+  ): Promise<HTMLImageElement>;
   $center(size?: "contain" | "cover"): CropperImageElement;
   $move(x: number, y?: number): CropperImageElement;
   $moveTo(x: number, y?: number): CropperImageElement;
@@ -73,7 +75,12 @@ export interface CropperShadeElement extends HTMLElement {
   height: number;
   slottable: boolean;
   themeColor: string;
-  $change(x: number, y: number, width?: number, height?: number): CropperShadeElement;
+  $change(
+    x: number,
+    y: number,
+    width?: number,
+    height?: number,
+  ): CropperShadeElement;
   $reset(): CropperShadeElement;
   $render(): CropperShadeElement;
 }

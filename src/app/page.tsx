@@ -1,19 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import ImageUpload from "../components/ImageUpload";
 import {
   CropperCanvas,
-  CropperImage,
-  CropperSelection,
-  CropperShade,
-  CropperHandle,
-  CropperGrid,
   CropperCrosshair,
-  CropperViewer,
-  type CropperSelectionElement,
+  CropperGrid,
+  CropperHandle,
+  CropperImage,
   type CropperImageElement,
+  CropperSelection,
+  type CropperSelectionElement,
+  CropperShade,
+  CropperViewer,
 } from "../components";
+import ImageUpload from "../components/ImageUpload";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -155,7 +155,7 @@ export default function Home() {
                 movable
                 resizable
               >
-                <CropperGrid role="grid" cover />
+                <CropperGrid cover />
                 <CropperCrosshair centered />
                 <CropperHandle
                   action="move"

@@ -71,7 +71,7 @@ export default function CropperSelection({
       precise={precise}
       class={className}
       style={style}
-      onChange={onChange as any}
+      onChange={onChange}
     >
       {children}
     </cropper-selection>

@@ -41,10 +41,10 @@ export default function CropperCanvas({
       theme-color={themeColor}
       class={className}
       style={style}
-      onAction={onAction as any}
-      onActionstart={onActionstart as any}
-      onActionmove={onActionmove as any}
-      onActionend={onActionend as any}
+      onAction={onAction}
+      onActionstart={onActionstart}
+      onActionmove={onActionmove}
+      onActionend={onActionend}
     >
       {children}
     </cropper-canvas>
