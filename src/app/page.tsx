@@ -1,105 +1,218 @@
-// src/app/page.tsx
 "use client";
 
-import Image from "next/image";
-import { useRef, useState } from "react";
-import ReactCrop, {
-  type Crop,
-  centerCrop,
-  makeAspectCrop,
-  type PixelCrop,
-} from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
+import { useEffect, useRef, useState } from "react";
 import ImageUpload from "../components/ImageUpload";
-import { getCroppedImg } from "../utils/canvasUtils";
 import styles from "./page.module.css";
-
-// Helper to center the crop initially
-function centerAspectCrop(
-  mediaWidth: number,
-  mediaHeight: number,
-  aspect: number,
-) {
-  return centerCrop(
-    makeAspectCrop(
-      {
-        unit: "%",
-        width: 90,
-      },
-      aspect,
-      mediaWidth,
-      mediaHeight,
-    ),
-    mediaWidth,
-    mediaHeight,
-  );
-}
 
 export default function Home() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState<Crop>();
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
-  const [croppedImage, setCroppedImage] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // 1. Create a ref to access the image element directly
-  const imgRef = useRef<HTMLImageElement>(null);
+  // Store the raw File object to preserve metadata (name, type)
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
 
-  const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const { width, height } = e.currentTarget;
-    // Start with a centered crop
-    setCrop(centerAspectCrop(width, height, 16 / 9));
+  // Store natural dimensions to calculate correct scale
+  const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 });
+
+  // const cropperRef = useRef<any>(null);
+  const selectionRef = useRef<any>(null);
+  const imageRef = useRef<any>(null);
+
+  useEffect(() => {
+    import("cropperjs");
+  }, []);
+
+  // Handler: Receives both URL and File object
+  const handleImageSelected = (url: string, file: File) => {
+    setImageSrc(url);
+    setOriginalFile(file);
+
+    // Load natural dimensions
+    const img = new Image();
+    img.onload = () => {
+      setNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.src = url;
   };
 
-  const showCroppedImage = async () => {
-    // 2. Ensure we have the image, the crop data, and the canvas ref
-    if (imgRef.current && completedCrop?.width && completedCrop?.height) {
+  const onDownload = async () => {
+    const selection = selectionRef.current;
+    const imageElement = imageRef.current;
+
+    if (selection && imageElement && originalFile) {
+      setIsProcessing(true);
+
       try {
-        const croppedImgUrl = await getCroppedImg(
-          imgRef.current, // Pass the HTMLImageElement
-          completedCrop, // Pass the PixelCrop
+        const imgRect = imageElement.getBoundingClientRect();
+        const selectionRect = selection.getBoundingClientRect();
+
+        // Safety check
+        if (!naturalSize.width || !imgRect.width) return;
+
+        // 1. Calculate Scale (Natural Size / Screen Size)
+        const scale = naturalSize.width / imgRect.width;
+
+        // 2. Calculate Target Dimensions
+        const targetWidth = Math.max(
+          1,
+          Math.round(selectionRect.width * scale),
         );
-        setCroppedImage(croppedImgUrl);
-      } catch (e) {
-        console.error(e);
+        const targetHeight = Math.max(
+          1,
+          Math.round(selectionRect.height * scale),
+        );
+
+        // 3. Generate High-Res Canvas
+        const canvas = await selection.$toCanvas({
+          width: targetWidth,
+          height: targetHeight,
+        });
+
+        // 4. Filename Logic
+        // Extract exact extension from original filename (e.g. .jpeg)
+        const lastDotIndex = originalFile.name.lastIndexOf(".");
+        const nameWithoutExt =
+          lastDotIndex !== -1
+            ? originalFile.name.substring(0, lastDotIndex)
+            : originalFile.name;
+        const originalExtension =
+          lastDotIndex !== -1 ? originalFile.name.substring(lastDotIndex) : "";
+
+        // 5. Download
+        // We ask the browser to use the original MIME type (e.g. image/jpeg) at 100% quality
+        canvas.toBlob(
+          (blob: Blob | null) => {
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+
+              // Construct filename: "my-photo-crop.jpeg"
+              link.download = `${nameWithoutExt}-crop${originalExtension}`;
+
+              document.body.appendChild(link);
+              link.click();
+
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+            }
+          },
+          originalFile.type,
+          1.0,
+        );
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Failed to crop image");
+      } finally {
+        setIsProcessing(false);
       }
     }
   };
 
   const handleReset = () => {
     setImageSrc(null);
-    setCroppedImage(null);
+    setOriginalFile(null);
+    setNaturalSize({ width: 0, height: 0 });
   };
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>Image Cropper</h1>
+      <h1 className={styles.title}>Cropper.js 2.0</h1>
 
       {!imageSrc ? (
-        <ImageUpload onImageSelected={setImageSrc} />
+        <ImageUpload onImageSelected={handleImageSelected} />
       ) : (
-        <div>
-          <div className={styles.cropContainer} style={{ height: "auto" }}>
-            {/* 3. Pass the ref to the image inside ReactCrop */}
-            <ReactCrop
-              crop={crop}
-              onChange={(_, percentCrop) => setCrop(percentCrop)}
-              onComplete={(c) => setCompletedCrop(c)}
-              aspect={undefined} // Free-form cropping
+        <div className={styles.editorLayout}>
+          <div className={styles.cropContainer}>
+            {/* biome-ignore lint: Custom Element */}
+            <cropper-canvas
+              // ref={cropperRef}
+              background
+              class={styles.cropperCanvas}
             >
-              {/* biome-ignore lint/performance/noImgElement: The standard img tag is required for the cropper ref to work correctly */}
-              <img
-                ref={imgRef}
+              {/* biome-ignore lint: Custom Element */}
+              <cropper-image
+                ref={imageRef}
                 src={imageSrc}
-                alt="Upload"
-                onLoad={onImageLoad}
-                // Ensure image scales but doesn't overflow
-                style={{ maxWidth: "100%", maxHeight: "70vh" }}
-              />
-            </ReactCrop>
+                alt="Picture"
+                rotatable
+                scalable
+                skewable
+                translatable
+              ></cropper-image>
+              {/* biome-ignore lint: Custom Element */}
+              <cropper-shade hidden></cropper-shade>
+              {/* biome-ignore lint: Custom Element */}
+              <cropper-handle action="select" plain></cropper-handle>
+
+              {/* biome-ignore lint: Custom Element */}
+              <cropper-selection
+                ref={selectionRef}
+                id="crop-selection"
+                initial-coverage="0.5"
+                movable
+                resizable
+              >
+                {/* biome-ignore lint: Custom Element */}
+                <cropper-grid role="grid" cover></cropper-grid>
+                {/* biome-ignore lint: Custom Element */}
+                <cropper-crosshair centered></cropper-crosshair>
+                {/* biome-ignore lint: Custom Element */}
+                <cropper-handle
+                  action="move"
+                  theme-color="rgba(255, 255, 255, 0.35)"
+                ></cropper-handle>
+                {/* biome-ignore lint: Custom Element */}
+                <cropper-handle action="nw-resize"></cropper-handle>
+                {/* biome-ignore lint: Custom Element */}
+                <cropper-handle action="ne-resize"></cropper-handle>
+                {/* biome-ignore lint: Custom Element */}
+                <cropper-handle action="se-resize"></cropper-handle>
+                {/* biome-ignore lint: Custom Element */}
+                <cropper-handle action="sw-resize"></cropper-handle>
+              </cropper-selection>
+            </cropper-canvas>
           </div>
 
-          <div className={styles.controls}>
-            <div className={styles.buttonGroup}>
+          <div className={styles.previewContainer}>
+            <div>
+              <div className={styles.previewLabel}>Live Preview</div>
+              {/* biome-ignore lint: Custom Element */}
+              <cropper-viewer
+                selection="#crop-selection"
+                class={styles.viewer}
+              ></cropper-viewer>
+            </div>
+
+            <div
+              style={{
+                marginTop: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+              }}
+            >
+              <div className={styles.infoText}>
+                Format: <strong>{originalFile?.type}</strong>
+                <br />
+                Saving as:{" "}
+                <strong>
+                  ...-crop
+                  {originalFile?.name.substring(
+                    originalFile?.name.lastIndexOf("."),
+                  )}
+                </strong>
+              </div>
+
+              <button
+                onClick={onDownload}
+                className={`${styles.btn} ${styles.btnDownload}`}
+                disabled={isProcessing}
+                type="button"
+              >
+                {isProcessing ? "Processing..." : "Download Crop"}
+              </button>
+
               <button
                 onClick={handleReset}
                 className={`${styles.btn} ${styles.btnReset}`}
@@ -107,37 +220,8 @@ export default function Home() {
               >
                 Reset
               </button>
-              <button
-                onClick={showCroppedImage}
-                className={`${styles.btn} ${styles.btnCrop}`}
-                type="button"
-              >
-                Generate Crop
-              </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {croppedImage && (
-        <div className={styles.result}>
-          <h3>Result</h3>
-          <Image
-            src={croppedImage}
-            alt="Cropped result"
-            width={completedCrop?.width}
-            height={completedCrop?.height}
-            className={styles.resultImg}
-            unoptimized // 👈 Mandatory for Blob URLs
-            style={{ width: "100%", height: "auto" }} // 👈 Keeps it responsive
-          />
-          <a
-            href={croppedImage}
-            download="cropped-image.jpg"
-            className={styles.btnDownload}
-          >
-            Download Image
-          </a>
         </div>
       )}
     </main>

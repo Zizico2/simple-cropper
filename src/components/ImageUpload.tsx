@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import styles from "./ImageUpload.module.css";
 
 interface ImageUploadProps {
-  onImageSelected: (url: string) => void;
+  onImageSelected: (url: string, file: File) => void;
 }
 
 export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
@@ -12,13 +12,15 @@ export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
       const objectUrl = URL.createObjectURL(file);
-      onImageSelected(objectUrl);
+      onImageSelected(objectUrl, file);
     }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: {
+      "image/*": [],
+    },
     multiple: false,
   });
 
@@ -31,7 +33,12 @@ export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
       {isDragActive ? (
         <p>Drop the image here ...</p>
       ) : (
-        <p>Drag & drop an image here, or click to select</p>
+        <div className={styles.content}>
+          <p className={styles.text}>
+            Drag & drop an image here, or click to select
+          </p>
+          <p className={styles.subtext}>Supports JPG, PNG, WEBP, BMP</p>
+        </div>
       )}
     </div>
   );
