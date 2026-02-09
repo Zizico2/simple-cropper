@@ -68,7 +68,7 @@ export default function CropperImage({
       translatable={translatable}
       class={className}
       style={style}
-      onTransform={onTransform as any}
+      onTransform={onTransform}
     >
       {children}
     </cropper-image>
