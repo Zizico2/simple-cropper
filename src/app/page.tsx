@@ -35,13 +35,14 @@ export default function Home() {
 
   // Handler: Receives both URL and File object
   const handleImageSelected = (url: string, file: File) => {
-    setImageSrc(url);
+
     setOriginalFile(file);
 
     // Load natural dimensions
     const img = new Image();
     img.onload = () => {
       setNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
+      setImageSrc(url);
     };
     img.src = url;
   };
@@ -130,44 +131,48 @@ export default function Home() {
     <main className={styles.container}>
       <h1 className={styles.title}>Cropper.js 2.0</h1>
 
-      {!imageSrc ? (
+      {!imageSrc || !naturalSize.width ? (
         <ImageUpload onImageSelected={handleImageSelected} />
       ) : (
         <div className={styles.editorLayout}>
-          <div className={styles.cropContainer}>
-            <CropperCanvas background className={styles.cropperCanvas}>
-              <CropperImage
-                ref={imageRef}
-                src={imageSrc}
-                alt="Picture"
-                rotatable
-                scalable
-                skewable
-                translatable
-              />
-              <CropperShade hidden />
-              <CropperHandle action="select" plain />
 
-              <CropperSelection
-                ref={selectionRef}
-                id="crop-selection"
-                initialCoverage="0.5"
-                movable
-                resizable
-              >
-                <CropperGrid cover />
-                <CropperCrosshair centered />
-                <CropperHandle
-                  action="move"
-                  themeColor="rgba(255, 255, 255, 0.35)"
-                />
-                <CropperHandle action="nw-resize" />
-                <CropperHandle action="ne-resize" />
-                <CropperHandle action="se-resize" />
-                <CropperHandle action="sw-resize" />
-              </CropperSelection>
-            </CropperCanvas>
-          </div>
+          <CropperCanvas background
+            style={{
+              width: 400,
+              height: 400 * (naturalSize.height / naturalSize.width)
+            }}
+          >
+            <CropperImage
+              initialCenterSize="cover"
+              ref={imageRef}
+              src={imageSrc}
+              alt="Picture"
+              scalable
+              translatable
+            />
+            <CropperShade hidden />
+            <CropperHandle action="select" plain />
+
+            <CropperSelection
+              ref={selectionRef}
+              id="crop-selection"
+              initialCoverage="0.5"
+              movable
+              resizable
+            >
+              <CropperGrid cover />
+              <CropperCrosshair centered />
+              <CropperHandle
+                action="move"
+                themeColor="rgba(255, 255, 255, 0.35)"
+              />
+              <CropperHandle action="nw-resize" />
+              <CropperHandle action="ne-resize" />
+              <CropperHandle action="se-resize" />
+              <CropperHandle action="sw-resize" />
+            </CropperSelection>
+          </CropperCanvas>
+
 
           <div className={styles.previewContainer}>
             <div>
