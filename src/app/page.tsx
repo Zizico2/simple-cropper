@@ -2,6 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import ImageUpload from "../components/ImageUpload";
+import {
+  CropperCanvas,
+  CropperImage,
+  CropperSelection,
+  CropperShade,
+  CropperHandle,
+  CropperGrid,
+  CropperCrosshair,
+  CropperViewer,
+  type CropperSelectionElement,
+  type CropperImageElement,
+} from "../components";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -14,9 +26,8 @@ export default function Home() {
   // Store natural dimensions to calculate correct scale
   const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 });
 
-  // const cropperRef = useRef<any>(null);
-  const selectionRef = useRef<any>(null);
-  const imageRef = useRef<any>(null);
+  const selectionRef = useRef<CropperSelectionElement>(null);
+  const imageRef = useRef<CropperImageElement>(null);
 
   useEffect(() => {
     import("cropperjs");
@@ -124,14 +135,8 @@ export default function Home() {
       ) : (
         <div className={styles.editorLayout}>
           <div className={styles.cropContainer}>
-            {/* biome-ignore lint: Custom Element */}
-            <cropper-canvas
-              // ref={cropperRef}
-              background
-              class={styles.cropperCanvas}
-            >
-              {/* biome-ignore lint: Custom Element */}
-              <cropper-image
+            <CropperCanvas background className={styles.cropperCanvas}>
+              <CropperImage
                 ref={imageRef}
                 src={imageSrc}
                 alt="Picture"
@@ -139,49 +144,38 @@ export default function Home() {
                 scalable
                 skewable
                 translatable
-              ></cropper-image>
-              {/* biome-ignore lint: Custom Element */}
-              <cropper-shade hidden></cropper-shade>
-              {/* biome-ignore lint: Custom Element */}
-              <cropper-handle action="select" plain></cropper-handle>
+              />
+              <CropperShade hidden />
+              <CropperHandle action="select" plain />
 
-              {/* biome-ignore lint: Custom Element */}
-              <cropper-selection
+              <CropperSelection
                 ref={selectionRef}
                 id="crop-selection"
-                initial-coverage="0.5"
+                initialCoverage="0.5"
                 movable
                 resizable
               >
-                {/* biome-ignore lint: Custom Element */}
-                <cropper-grid role="grid" cover></cropper-grid>
-                {/* biome-ignore lint: Custom Element */}
-                <cropper-crosshair centered></cropper-crosshair>
-                {/* biome-ignore lint: Custom Element */}
-                <cropper-handle
+                <CropperGrid role="grid" cover />
+                <CropperCrosshair centered />
+                <CropperHandle
                   action="move"
-                  theme-color="rgba(255, 255, 255, 0.35)"
-                ></cropper-handle>
-                {/* biome-ignore lint: Custom Element */}
-                <cropper-handle action="nw-resize"></cropper-handle>
-                {/* biome-ignore lint: Custom Element */}
-                <cropper-handle action="ne-resize"></cropper-handle>
-                {/* biome-ignore lint: Custom Element */}
-                <cropper-handle action="se-resize"></cropper-handle>
-                {/* biome-ignore lint: Custom Element */}
-                <cropper-handle action="sw-resize"></cropper-handle>
-              </cropper-selection>
-            </cropper-canvas>
+                  themeColor="rgba(255, 255, 255, 0.35)"
+                />
+                <CropperHandle action="nw-resize" />
+                <CropperHandle action="ne-resize" />
+                <CropperHandle action="se-resize" />
+                <CropperHandle action="sw-resize" />
+              </CropperSelection>
+            </CropperCanvas>
           </div>
 
           <div className={styles.previewContainer}>
             <div>
               <div className={styles.previewLabel}>Live Preview</div>
-              {/* biome-ignore lint: Custom Element */}
-              <cropper-viewer
+              <CropperViewer
                 selection="#crop-selection"
-                class={styles.viewer}
-              ></cropper-viewer>
+                className={styles.viewer}
+              />
             </div>
 
             <div
