@@ -6,7 +6,7 @@
 }
 
 .container::after {
-  content: '';
+  content: "";
   position: fixed;
   right: 0;
   top: 0;
@@ -27,7 +27,7 @@
     margin: 0 auto;
     padding: 1.5rem;
   }
-  
+
   .container::after {
     display: none;
   }
