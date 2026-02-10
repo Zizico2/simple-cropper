@@ -59,6 +59,9 @@ export default function CropperApp() {
   };
 
   const handleReset = () => {
+    if (imageData) {
+      URL.revokeObjectURL(imageData.src);
+    }
     setImageData(null);
     setCrop(undefined);
     setCompletedCrop(undefined);

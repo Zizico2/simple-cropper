@@ -1,22 +1,32 @@
 .dropzone {
-  border: 2px dashed #cccccc;
+  border: 2px dashed color-mix(in srgb, var(--foreground) 30%, transparent);
   border-radius: 8px;
   padding: 40px;
   text-align: center;
   cursor: pointer;
-  background-color: #f9f9f9;
-  color: #666;
+  background-color: color-mix(in srgb, var(--foreground) 4%, var(--background));
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
   transition:
     border-color 0.2s ease-in-out,
     background-color 0.2s;
 }
 
 .dropzone:hover {
-  border-color: #888;
+  border-color: color-mix(in srgb, var(--foreground) 50%, transparent);
 }
 
 .active {
   border-color: #0070f3;
-  background-color: #eff6ff;
+  background-color: color-mix(in srgb, #0070f3 10%, var(--background));
   color: #0070f3;
+}
+
+.text {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtext {
+  font-size: 0.85rem;
+  opacity: 0.7;
 }

@@ -8,7 +8,7 @@
 
 .infoText {
   font-size: 0.85rem;
-  color: #555;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
 }
 
 .toolbarActions {
@@ -38,7 +38,7 @@
 }
 
 .btnReset:hover:not(:disabled) {
-  background-color: #fff5f5;
+  background-color: color-mix(in srgb, #dc3545 10%, var(--background));
 }
 
 .btnDownload {
