@@ -31,7 +31,10 @@ export default function Home() {
     // Load natural dimensions
     const img = new window.Image();
     img.onload = () => {
-      setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+      setImageDimensions({
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      });
       setImageSrc(url);
     };
     img.src = url;
@@ -125,7 +128,9 @@ export default function Home() {
               Format: <strong>{originalFile.type}</strong> &middot; Saving as:{" "}
               <strong>
                 ...-crop
-                {originalFile.name.substring(originalFile.name.lastIndexOf("."))}
+                {originalFile.name.substring(
+                  originalFile.name.lastIndexOf("."),
+                )}
               </strong>
             </>
           ) : (
