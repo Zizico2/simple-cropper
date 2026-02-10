@@ -5,19 +5,18 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    
     "build:cf": "opennextjs-cloudflare build",
     "deploy:cf": "opennextjs-cloudflare deploy",
     "upload:cf": "opennextjs-cloudflare upload",
-
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "lint": "biome check",
     "format": "biome format --write"
   },
   "dependencies": {
+    "@cloudflare/kumo": "^1.5.0",
     "@opennextjs/cloudflare": "^1.16.3",
+    "@phosphor-icons/react": "^2.1.10",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",

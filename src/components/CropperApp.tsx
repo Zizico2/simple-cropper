@@ -1,12 +1,14 @@
 "use client";
 
 import Image from "next/image";
+
 import { useState } from "react";
 import ReactCrop, { type Crop, type PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { downloadCrop } from "../utils/downloadCrop";
 import styles from "./CropperApp.module.css";
 import ImageUpload from "./ImageUpload";
+import { Button } from "@cloudflare/kumo/components/button";
 
 interface ImageData {
   src: string;
@@ -86,23 +88,24 @@ export default function CropperApp() {
         </p>
 
         <div className={styles.toolbarActions}>
-          <button
+          <Button
             onClick={onDownload}
-            className={`${styles.btn} ${styles.btnDownload}`}
             disabled={isProcessing || !completedCrop}
             type="button"
+            variant="primary"
+            loading={isProcessing}
           >
-            {isProcessing ? "Processing..." : "Download Crop"}
-          </button>
+            Download Crop
+          </Button>
 
-          <button
+          <Button
             onClick={handleReset}
-            className={`${styles.btn} ${styles.btnReset}`}
             disabled={!imageData}
             type="button"
+            variant="destructive"
           >
             Reset
-          </button>
+          </Button>
         </div>
       </div>
 
