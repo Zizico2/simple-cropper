@@ -30,16 +30,17 @@ export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
       className={`${styles.dropzone} ${isDragActive ? styles.active : ""}`}
     >
       <input {...getInputProps()} />
-      {isDragActive ? (
-        <p>Drop the image here ...</p>
-      ) : (
-        <>
-          <p className={styles.text}>
-            Drag & drop an image here, or click to select
-          </p>
-          <p className={styles.subtext}>Supports JPG, PNG, WEBP, BMP</p>
-        </>
-      )}
+      <p className={`${styles.text} ${isDragActive ? styles.hidden : ""}`}>
+        Drag & drop an image here, or click to select
+      </p>
+      <p className={`${styles.subtext} ${isDragActive ? styles.hidden : ""}`}>
+        Supports JPG, PNG, WEBP, BMP
+      </p>
+      <p
+        className={`${styles.text} ${styles.dragMessage} ${isDragActive ? "" : styles.hidden}`}
+      >
+        Drop the image here ...
+      </p>
     </div>
   );
 }
