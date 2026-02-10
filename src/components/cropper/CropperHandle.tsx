@@ -7,18 +7,18 @@ import { useCropperInit } from "./useCropperInit";
 interface CropperHandleProps {
   ref?: React.Ref<CropperHandleElement>;
   action?:
-  | "select"
-  | "move"
-  | "scale"
-  | "n-resize"
-  | "e-resize"
-  | "s-resize"
-  | "w-resize"
-  | "ne-resize"
-  | "nw-resize"
-  | "se-resize"
-  | "sw-resize"
-  | "none";
+    | "select"
+    | "move"
+    | "scale"
+    | "n-resize"
+    | "e-resize"
+    | "s-resize"
+    | "w-resize"
+    | "ne-resize"
+    | "nw-resize"
+    | "se-resize"
+    | "sw-resize"
+    | "none";
   plain?: boolean;
   slottable?: boolean;
   themeColor?: string;

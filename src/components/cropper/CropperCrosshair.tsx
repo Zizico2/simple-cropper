@@ -28,7 +28,7 @@ export default function CropperCrosshair({
   if (!isReady) {
     return <>{/* fallback */} </>;
   }
-  
+
   return (
     <cropper-crosshair
       ref={ref}

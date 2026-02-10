@@ -1,18 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  CropperCanvas,
-  CropperCrosshair,
-  CropperGrid,
-  CropperHandle,
-  CropperImage,
-  type CropperImageElement,
-  CropperSelection,
-  type CropperSelectionElement,
-  CropperShade,
-  CropperViewer,
-} from "../components/cropper";
+import ReactCrop, { type Crop, type PixelCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 import ImageUpload from "../components/ImageUpload";
 import styles from "./page.module.css";
 
@@ -26,17 +16,15 @@ export default function Home() {
   // Store natural dimensions to calculate correct scale
   const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 });
 
-  const selectionRef = useRef<CropperSelectionElement>(null);
-  const imageRef = useRef<CropperImageElement>(null);
-
-  // useEffect(() => {
-  //   import("cropperjs");
-  // }, []);
+  const [crop, setCrop] = useState<Crop>();
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
+  const imgRef = useRef<HTMLImageElement>(null);
 
   // Handler: Receives both URL and File object
   const handleImageSelected = (url: string, file: File) => {
-
     setOriginalFile(file);
+    setCrop(undefined);
+    setCompletedCrop(undefined);
 
     // Load natural dimensions
     const img = new Image();
@@ -47,77 +35,72 @@ export default function Home() {
     img.src = url;
   };
 
-  const onDownload = async () => {
-    const selection = selectionRef.current;
-    const imageElement = imageRef.current;
+  const onDownload = () => {
+    const image = imgRef.current;
+    if (!image || !completedCrop || !originalFile) return;
 
-    if (selection && imageElement && originalFile) {
-      setIsProcessing(true);
+    setIsProcessing(true);
 
-      try {
-        const imgRect = imageElement.getBoundingClientRect();
-        const selectionRect = selection.getBoundingClientRect();
+    try {
+      const scaleX = image.naturalWidth / image.width;
+      const scaleY = image.naturalHeight / image.height;
 
-        // Safety check
-        if (!naturalSize.width || !imgRect.width) return;
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("No 2d context");
 
-        // 1. Calculate Scale (Natural Size / Screen Size)
-        const scale = naturalSize.width / imgRect.width;
+      // Target dimensions at full resolution
+      const targetWidth = Math.round(completedCrop.width * scaleX);
+      const targetHeight = Math.round(completedCrop.height * scaleY);
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
 
-        // 2. Calculate Target Dimensions
-        const targetWidth = Math.max(
-          1,
-          Math.round(selectionRect.width * scale),
-        );
-        const targetHeight = Math.max(
-          1,
-          Math.round(selectionRect.height * scale),
-        );
+      ctx.imageSmoothingQuality = "high";
 
-        // 3. Generate High-Res Canvas
-        const canvas = await selection.$toCanvas({
-          width: targetWidth,
-          height: targetHeight,
-        });
+      // Draw the cropped region from the original image
+      ctx.drawImage(
+        image,
+        completedCrop.x * scaleX,
+        completedCrop.y * scaleY,
+        targetWidth,
+        targetHeight,
+        0,
+        0,
+        targetWidth,
+        targetHeight,
+      );
 
-        // 4. Filename Logic
-        // Extract exact extension from original filename (e.g. .jpeg)
-        const lastDotIndex = originalFile.name.lastIndexOf(".");
-        const nameWithoutExt =
-          lastDotIndex !== -1
-            ? originalFile.name.substring(0, lastDotIndex)
-            : originalFile.name;
-        const originalExtension =
-          lastDotIndex !== -1 ? originalFile.name.substring(lastDotIndex) : "";
+      // Filename logic
+      const lastDotIndex = originalFile.name.lastIndexOf(".");
+      const nameWithoutExt =
+        lastDotIndex !== -1
+          ? originalFile.name.substring(0, lastDotIndex)
+          : originalFile.name;
+      const originalExtension =
+        lastDotIndex !== -1 ? originalFile.name.substring(lastDotIndex) : "";
 
-        // 5. Download
-        // We ask the browser to use the original MIME type (e.g. image/jpeg) at 100% quality
-        canvas.toBlob(
-          (blob: Blob | null) => {
-            if (blob) {
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement("a");
-              link.href = url;
-
-              // Construct filename: "my-photo-crop.jpeg"
-              link.download = `${nameWithoutExt}-crop${originalExtension}`;
-
-              document.body.appendChild(link);
-              link.click();
-
-              document.body.removeChild(link);
-              URL.revokeObjectURL(url);
-            }
-          },
-          originalFile.type,
-          1.0,
-        );
-      } catch (err) {
-        console.error("Error:", err);
-        alert("Failed to crop image");
-      } finally {
-        setIsProcessing(false);
-      }
+      // Download with original MIME type at 100% quality
+      canvas.toBlob(
+        (blob: Blob | null) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${nameWithoutExt}-crop${originalExtension}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }
+          setIsProcessing(false);
+        },
+        originalFile.type,
+        1.0,
+      );
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Failed to crop image");
+      setIsProcessing(false);
     }
   };
 
@@ -125,71 +108,37 @@ export default function Home() {
     setImageSrc(null);
     setOriginalFile(null);
     setNaturalSize({ width: 0, height: 0 });
+    setCrop(undefined);
+    setCompletedCrop(undefined);
   };
 
   return (
     <main className={styles.container}>
       <h1 className={styles.title}>Simple Cropper</h1>
 
-      {!imageSrc ||  naturalSize.width === 0 || naturalSize.height === 0 ? (
+      {!imageSrc || naturalSize.width === 0 || naturalSize.height === 0 ? (
         <ImageUpload onImageSelected={handleImageSelected} />
       ) : (
         <div className={styles.editorLayout}>
-
-          <div style={{
-            width: "100%",
-            maxHeight: "80vh",
-            aspectRatio: `${naturalSize.width} / ${naturalSize.height}`,
-          }}>
-            <CropperCanvas background
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            >
-              <CropperImage
-                initialCenterSize="cover"
-                ref={imageRef}
-                src={imageSrc}
-                alt="Picture"
-                scalable
-                translatable
-              />
-              <CropperShade />
-              <CropperHandle action="select" plain />
-
-              <CropperSelection
-                ref={selectionRef}
-                id="crop-selection"
-                // initialCoverage="0.5"
-                movable
-                resizable
-                hidden
-              >
-                <CropperGrid cover />
-                <CropperCrosshair centered />
-                <CropperHandle
-                  action="move"
-                  themeColor="rgba(255, 255, 255, 0.35)"
-                />
-                <CropperHandle action="nw-resize" />
-                <CropperHandle action="ne-resize" />
-                <CropperHandle action="se-resize" />
-                <CropperHandle action="sw-resize" />
-              </CropperSelection>
-            </CropperCanvas>
-          </div>
-
+          <ReactCrop
+            crop={crop}
+            onChange={(c) => setCrop(c)}
+            onComplete={(c) => setCompletedCrop(c)}
+            style={{
+              width: "100%",
+              maxHeight: "80vh",
+            }}
+          >
+            {/* biome-ignore lint/performance/noImgElement: Required for react-image-crop */}
+            <img
+              ref={imgRef}
+              src={imageSrc}
+              alt="Crop target"
+              crossOrigin="anonymous"
+            />
+          </ReactCrop>
 
           <div className={styles.previewContainer}>
-            {/* <div>
-              <div className={styles.previewLabel}>Live Preview</div>
-              <CropperViewer
-                selection="#crop-selection"
-                className={styles.viewer}
-              />
-            </div> */}
-
             <div
               style={{
                 marginTop: "auto",
@@ -213,7 +162,7 @@ export default function Home() {
               <button
                 onClick={onDownload}
                 className={`${styles.btn} ${styles.btnDownload}`}
-                disabled={isProcessing}
+                disabled={isProcessing || !completedCrop}
                 type="button"
               >
                 {isProcessing ? "Processing..." : "Download Crop"}

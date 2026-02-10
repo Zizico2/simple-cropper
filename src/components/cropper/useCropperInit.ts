@@ -1,18 +1,20 @@
-import { useEffect, useState } from 'react';
-import { loadCropperLibrary } from './cropper-loader';
+import { useEffect, useState } from "react";
+import { loadCropperLibrary } from "./cropper-loader";
 
 export function useCropperInit() {
-    const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-    useEffect(() => {
-        let mounted = true;
+  useEffect(() => {
+    let mounted = true;
 
-        loadCropperLibrary().then(() => {
-            if (mounted) setIsLoaded(true);
-        });
+    loadCropperLibrary().then(() => {
+      if (mounted) setIsLoaded(true);
+    });
 
-        return () => { mounted = false; };
-    }, []);
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-    return isLoaded;
+  return isLoaded;
 }
