@@ -10,12 +10,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
-        run: bun install && bun run build
+        run: bun install && bun run build:cf
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy YOUR_DIRECTORY_OF_STATIC_ASSETS --project-name=YOUR_PROJECT_NAME
+          command: pages deploy .open-next --project-name="simple-cropper"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: deploy
