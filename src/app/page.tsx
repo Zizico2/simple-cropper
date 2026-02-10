@@ -131,7 +131,7 @@ export default function Home() {
     <main className={styles.container}>
       <h1 className={styles.title}>Simple Cropper</h1>
 
-      {!imageSrc || !naturalSize.width ? (
+      {!imageSrc ||  naturalSize.width === 0 || naturalSize.height === 0 ? (
         <ImageUpload onImageSelected={handleImageSelected} />
       ) : (
         <div className={styles.editorLayout}>
