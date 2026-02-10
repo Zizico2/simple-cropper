@@ -33,12 +33,12 @@ export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
       {isDragActive ? (
         <p>Drop the image here ...</p>
       ) : (
-        <div className={styles.content}>
+        <>
           <p className={styles.text}>
             Drag & drop an image here, or click to select
           </p>
           <p className={styles.subtext}>Supports JPG, PNG, WEBP, BMP</p>
-        </div>
+        </>
       )}
     </div>
   );
