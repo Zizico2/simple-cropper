@@ -11,7 +11,8 @@
     "upload:cf": "opennextjs-cloudflare upload",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "format-check": "biome format"
   },
   "dependencies": {
     "@cloudflare/kumo": "^1.5.0",
