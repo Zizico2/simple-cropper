@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useState } from "react";
 import ReactCrop, { type Crop, type PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -13,6 +14,10 @@ export default function Home() {
   // Store the raw File object to preserve metadata (name, type)
   const [originalFile, setOriginalFile] = useState<File | null>(null);
 
+  const [imageDimensions, setImageDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const imgRef = useRef<HTMLImageElement>(null);
@@ -24,8 +29,9 @@ export default function Home() {
     setCompletedCrop(undefined);
 
     // Load natural dimensions
-    const img = new Image();
+    const img = new window.Image();
     img.onload = () => {
+      setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
       setImageSrc(url);
     };
     img.src = url;
@@ -103,80 +109,70 @@ export default function Home() {
   const handleReset = () => {
     setImageSrc(null);
     setOriginalFile(null);
-
+    setImageDimensions(null);
     setCrop(undefined);
     setCompletedCrop(undefined);
   };
 
   return (
     <main className={styles.container}>
+      <h1 className={styles.title}>Simple Cropper</h1>
 
-      {!imageSrc ? (
-        <>
-          <h1 className={styles.title}>Simple Cropper</h1>
-          <ImageUpload onImageSelected={handleImageSelected} />
-        </>
+      <div className={styles.toolbar}>
+        <p className={styles.infoText}>
+          {originalFile ? (
+            <>
+              Format: <strong>{originalFile.type}</strong> &middot; Saving as:{" "}
+              <strong>
+                ...-crop
+                {originalFile.name.substring(originalFile.name.lastIndexOf("."))}
+              </strong>
+            </>
+          ) : (
+            "No image selected"
+          )}
+        </p>
+
+        <div className={styles.toolbarActions}>
+          <button
+            onClick={onDownload}
+            className={`${styles.btn} ${styles.btnDownload}`}
+            disabled={isProcessing || !completedCrop}
+            type="button"
+          >
+            {isProcessing ? "Processing..." : "Download Crop"}
+          </button>
+
+          <button
+            onClick={handleReset}
+            className={`${styles.btn} ${styles.btnReset}`}
+            disabled={!imageSrc}
+            type="button"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
+      {!imageSrc || !imageDimensions ? (
+        <ImageUpload onImageSelected={handleImageSelected} />
       ) : (
-        <>
-
-          <div className={styles.cropperWrapper}>
-            <ReactCrop
-              crop={crop}
-              onChange={(c) => setCrop(c)}
-              onComplete={(c) => setCompletedCrop(c)}
-            >
-              {/* biome-ignore lint/performance/noImgElement: Required for react-image-crop */}
-              <img
-                ref={imgRef}
-                src={imageSrc}
-                alt="Crop target"
-                crossOrigin="anonymous"
-                className={styles.cropImage}
-              />
-            </ReactCrop>
-          </div>
-
-
-          <div className={styles.previewContainer}>
-            <div
-              style={{
-                marginTop: "auto",
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
-              }}
-            >
-              <div className={styles.infoText}>
-                Format: <strong>{originalFile?.type}</strong>
-                <br />
-                Saving as:{" "}
-                <strong>
-                  ...-crop
-                  {originalFile?.name.substring(
-                    originalFile?.name.lastIndexOf("."),
-                  )}
-                </strong>
-              </div>
-
-              <button
-                onClick={onDownload}
-                className={`${styles.btn} ${styles.btnDownload}`}
-                disabled={isProcessing || !completedCrop}
-                type="button"
-              >
-                {isProcessing ? "Processing..." : "Download Crop"}
-              </button>
-
-              <button
-                onClick={handleReset}
-                className={`${styles.btn} ${styles.btnReset}`}
-                type="button"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-        </>
+        <ReactCrop
+          crop={crop}
+          onChange={(c) => setCrop(c)}
+          onComplete={(c) => setCompletedCrop(c)}
+        >
+          <Image
+            ref={imgRef}
+            src={imageSrc}
+            alt="Crop target"
+            width={imageDimensions.width}
+            height={imageDimensions.height}
+            crossOrigin="anonymous"
+            className={styles.cropImage}
+            unoptimized
+          />
+        </ReactCrop>
       )}
     </main>
   );
