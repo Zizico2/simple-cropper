@@ -5,10 +5,10 @@ import Image from "next/image";
 import { useState } from "react";
 import ReactCrop, { type Crop, type PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import { Button } from "@cloudflare/kumo/components/button";
 import { downloadCrop } from "../utils/downloadCrop";
 import styles from "./CropperApp.module.css";
 import ImageUpload from "./ImageUpload";
-import { Button } from "@cloudflare/kumo/components/button";
 
 interface ImageData {
   src: string;
