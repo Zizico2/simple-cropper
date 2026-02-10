@@ -92,7 +92,7 @@ export default function CropperApp() {
             onClick={onDownload}
             disabled={isProcessing || !completedCrop}
             type="button"
-            variant="primary"
+            variant="secondary"
             loading={isProcessing}
           >
             Download Crop
@@ -102,7 +102,7 @@ export default function CropperApp() {
             onClick={handleReset}
             disabled={!imageData}
             type="button"
-            variant="destructive"
+            variant="secondary-destructive"
           >
             Reset
           </Button>
