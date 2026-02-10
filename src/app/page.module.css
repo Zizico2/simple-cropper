@@ -1,13 +1,35 @@
 .container {
   max-width: 600px;
   margin: 0 auto 0 0;
-  padding: 2rem 4rem 2rem 2rem;
+  padding: 1.5rem 3rem 1.5rem 1.5rem;
+  position: relative;
+}
+
+.container::after {
+  content: '';
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2.4rem;
+  background: rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .container::after {
+    background: rgba(255, 255, 255, 0.03);
+  }
 }
 
 @media (min-width: 640px) {
   .container {
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .container::after {
+    display: none;
   }
 }
 
