@@ -18,6 +18,7 @@ A lightweight, client-side image cropping tool built with modern web technologie
 | Runtime | [Cloudflare Workers](https://workers.cloudflare.com/) (edge) |
 | Package Manager | [Bun](https://bun.sh/) |
 | Styling | CSS Modules + CSS custom properties |
+| UI Components | [Kumo](https://github.com/cloudflare/kumo) |
 | Linting & Formatting | [Biome](https://biomejs.dev/) |
 | Deployment | [Cloudflare Workers](https://workers.cloudflare.com/) via [OpenNext](https://opennext.js.org/) |
 | CI/CD | GitHub Actions |
