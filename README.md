@@ -36,7 +36,7 @@ A lightweight, client-side image cropping tool built with modern web technologie
 ### Deployment & CI/CD
 
 - **Edge deployment** on Cloudflare Workers via OpenNext, delivering low-latency responses globally
-- **Automated CI/CD pipeline** — every push triggers a GitHub Actions workflow that installs dependencies with Bun, builds with OpenNext, and deploys to Cloudflare in a single pass
+- **Automated CI/CD pipeline** — every push runs linting, format checks, and build validation; deployments to Cloudflare only trigger on GitHub releases, ensuring production stability while maintaining fast feedback on code quality
 - **Infrastructure as code** — `wrangler.toml` and `open-next.config.ts` version the full deployment configuration alongside the application code
 
 ## Getting Started
