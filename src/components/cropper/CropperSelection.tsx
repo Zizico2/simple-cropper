@@ -25,6 +25,7 @@ interface CropperSelectionProps {
   children?: ReactNode;
   className?: string;
   style?: CSSProperties;
+  hidden?: boolean;
   onChange?: (event: CustomEvent) => void;
 }
 
@@ -49,6 +50,7 @@ export default function CropperSelection({
   children,
   className,
   style,
+  hidden,
   onChange,
 }: CropperSelectionProps) {
   const isReady = useCropperInit();
@@ -78,6 +80,7 @@ export default function CropperSelection({
       precise={precise}
       class={className}
       style={style}
+      hidden={hidden}
       onChange={onChange}
     >
       {children}
