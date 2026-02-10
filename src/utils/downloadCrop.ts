@@ -1,54 +1,56 @@
-import type { PixelCrop } from "react-image-crop";
+import type { PercentCrop } from "react-image-crop";
 
 interface CropDownloadOptions {
-  image: HTMLImageElement;
-  crop: PixelCrop;
+  imageSrc: string;
+  crop: PercentCrop;
+  naturalWidth: number;
+  naturalHeight: number;
   fileName: string;
   mimeType: string;
 }
 
-export function downloadCrop({
-  image,
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+export async function downloadCrop({
+  imageSrc,
   crop,
+  naturalWidth,
+  naturalHeight,
   fileName,
   mimeType,
 }: CropDownloadOptions): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
+  const image = await loadImage(imageSrc);
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      reject(new Error("No 2d context"));
-      return;
-    }
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("No 2d context");
 
-    const targetWidth = Math.round(crop.width * scaleX);
-    const targetHeight = Math.round(crop.height * scaleY);
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
+  const srcX = Math.round((crop.x / 100) * naturalWidth);
+  const srcY = Math.round((crop.y / 100) * naturalHeight);
+  const srcW = Math.round((crop.width / 100) * naturalWidth);
+  const srcH = Math.round((crop.height / 100) * naturalHeight);
 
-    ctx.imageSmoothingQuality = "high";
+  canvas.width = srcW;
+  canvas.height = srcH;
+  ctx.imageSmoothingQuality = "high";
 
-    ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      targetWidth,
-      targetHeight,
-      0,
-      0,
-      targetWidth,
-      targetHeight,
-    );
+  ctx.drawImage(image, srcX, srcY, srcW, srcH, 0, 0, srcW, srcH);
 
-    const lastDotIndex = fileName.lastIndexOf(".");
-    const nameWithoutExt =
-      lastDotIndex !== -1 ? fileName.substring(0, lastDotIndex) : fileName;
-    const originalExtension =
-      lastDotIndex !== -1 ? fileName.substring(lastDotIndex) : "";
+  const lastDotIndex = fileName.lastIndexOf(".");
+  const nameWithoutExt =
+    lastDotIndex !== -1 ? fileName.substring(0, lastDotIndex) : fileName;
+  const originalExtension =
+    lastDotIndex !== -1 ? fileName.substring(lastDotIndex) : "";
 
+  return new Promise<void>((resolve) => {
     canvas.toBlob(
       (blob: Blob | null) => {
         if (blob) {

@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
-import ReactCrop, { type Crop, type PixelCrop } from "react-image-crop";
+import { useState } from "react";
+import ReactCrop, { type Crop, type PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { downloadCrop } from "../utils/downloadCrop";
 import styles from "./CropperApp.module.css";
@@ -19,8 +19,7 @@ export default function CropperApp() {
   const [imageData, setImageData] = useState<ImageData | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [crop, setCrop] = useState<Crop>();
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
-  const imgRef = useRef<HTMLImageElement>(null);
+  const [completedCrop, setCompletedCrop] = useState<PercentCrop>();
 
   const handleImageSelected = (url: string, file: File) => {
     setCrop(undefined);
@@ -39,14 +38,15 @@ export default function CropperApp() {
   };
 
   const onDownload = async () => {
-    const image = imgRef.current;
-    if (!image || !completedCrop || !imageData) return;
+    if (!completedCrop || !imageData) return;
 
     setIsProcessing(true);
     try {
       await downloadCrop({
-        image,
+        imageSrc: imageData.src,
         crop: completedCrop,
+        naturalWidth: imageData.width,
+        naturalHeight: imageData.height,
         fileName: imageData.file.name,
         mimeType: imageData.file.type,
       });
@@ -109,10 +109,9 @@ export default function CropperApp() {
         <ReactCrop
           crop={crop}
           onChange={(c) => setCrop(c)}
-          onComplete={(c) => setCompletedCrop(c)}
+          onComplete={(_c, percentCrop) => setCompletedCrop(percentCrop)}
         >
           <Image
-            ref={imgRef}
             src={imageData.src}
             alt="Crop target"
             width={imageData.width}
