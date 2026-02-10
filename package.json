@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    
+
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     
     "build:cf": "opennextjs-cloudflare build",
@@ -23,7 +23,7 @@
     "pica": "^9.0.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-dropzone": "^14.4.0",
+    "react-dropzone": "^15.0.0",
     "react-image-crop": "^11.0.10"
   },
   "devDependencies": {
