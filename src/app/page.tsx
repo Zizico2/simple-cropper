@@ -110,28 +110,31 @@ export default function Home() {
 
   return (
     <main className={styles.container}>
-      {/* <h1 className={styles.title}>Simple Cropper</h1> */}
 
       {!imageSrc ? (
-        <ImageUpload onImageSelected={handleImageSelected} />
+        <>
+          <h1 className={styles.title}>Simple Cropper</h1>
+          <ImageUpload onImageSelected={handleImageSelected} />
+        </>
       ) : (
         <>
 
-          <ReactCrop
-            crop={crop}
-            onChange={(c) => setCrop(c)}
-            onComplete={(c) => setCompletedCrop(c)}
-            style={{ flex: "1 1 60%", }}
-          >
-            {/* biome-ignore lint/performance/noImgElement: Required for react-image-crop */}
-            <img
-              ref={imgRef}
-              src={imageSrc}
-              alt="Crop target"
-              crossOrigin="anonymous"
-
-            />
-          </ReactCrop>
+          <div className={styles.cropperWrapper}>
+            <ReactCrop
+              crop={crop}
+              onChange={(c) => setCrop(c)}
+              onComplete={(c) => setCompletedCrop(c)}
+            >
+              {/* biome-ignore lint/performance/noImgElement: Required for react-image-crop */}
+              <img
+                ref={imgRef}
+                src={imageSrc}
+                alt="Crop target"
+                crossOrigin="anonymous"
+                className={styles.cropImage}
+              />
+            </ReactCrop>
+          </div>
 
 
           <div className={styles.previewContainer}>
