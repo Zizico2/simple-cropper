@@ -110,20 +110,18 @@ export default function Home() {
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>Simple Cropper</h1>
+      {/* <h1 className={styles.title}>Simple Cropper</h1> */}
 
       {!imageSrc ? (
         <ImageUpload onImageSelected={handleImageSelected} />
       ) : (
-        <div className={styles.editorLayout}>
+        <>
+
           <ReactCrop
             crop={crop}
             onChange={(c) => setCrop(c)}
             onComplete={(c) => setCompletedCrop(c)}
-            style={{
-              width: "100%",
-              maxHeight: "80vh",
-            }}
+            style={{ flex: "1 1 60%", }}
           >
             {/* biome-ignore lint/performance/noImgElement: Required for react-image-crop */}
             <img
@@ -131,8 +129,10 @@ export default function Home() {
               src={imageSrc}
               alt="Crop target"
               crossOrigin="anonymous"
+
             />
           </ReactCrop>
+
 
           <div className={styles.previewContainer}>
             <div
@@ -173,7 +173,7 @@ export default function Home() {
               </button>
             </div>
           </div>
-        </div>
+        </>
       )}
     </main>
   );
