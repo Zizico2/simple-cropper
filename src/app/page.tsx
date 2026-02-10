@@ -13,9 +13,6 @@ export default function Home() {
   // Store the raw File object to preserve metadata (name, type)
   const [originalFile, setOriginalFile] = useState<File | null>(null);
 
-  // Store natural dimensions to calculate correct scale
-  const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 });
-
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const imgRef = useRef<HTMLImageElement>(null);
@@ -29,7 +26,6 @@ export default function Home() {
     // Load natural dimensions
     const img = new Image();
     img.onload = () => {
-      setNaturalSize({ width: img.naturalWidth, height: img.naturalHeight });
       setImageSrc(url);
     };
     img.src = url;
@@ -107,7 +103,7 @@ export default function Home() {
   const handleReset = () => {
     setImageSrc(null);
     setOriginalFile(null);
-    setNaturalSize({ width: 0, height: 0 });
+
     setCrop(undefined);
     setCompletedCrop(undefined);
   };
@@ -116,7 +112,7 @@ export default function Home() {
     <main className={styles.container}>
       <h1 className={styles.title}>Simple Cropper</h1>
 
-      {!imageSrc || naturalSize.width === 0 || naturalSize.height === 0 ? (
+      {!imageSrc ? (
         <ImageUpload onImageSelected={handleImageSelected} />
       ) : (
         <div className={styles.editorLayout}>
