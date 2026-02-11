@@ -3,16 +3,6 @@
 @source "../../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
 
 @layer base {
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
-    }
-  }
-  @media (prefers-color-scheme: light) {
-    :root {
-      color-scheme: light;
-    }
-  }
   :root {
     --background: #ffffff;
     --foreground: #171717;
@@ -23,15 +13,14 @@
     --surface-tint: color-mix(in srgb, var(--foreground) 4%, var(--background));
     --accent: #0070f3;
     --accent-tint: color-mix(in srgb, #0070f3 10%, var(--background));
+    color-scheme: light;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --background: #0a0a0a;
-      --foreground: #ededed;
-    }
-    html {
       color-scheme: dark;
+      --foreground: #ededed;
     }
   }
 
