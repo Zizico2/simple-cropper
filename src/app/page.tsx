@@ -1,10 +1,9 @@
 import CropperApp from "../components/CropperApp";
-import styles from "./page.module.css";
 
 export default async function Home() {
   return (
-    <main className={styles.container}>
-      <h1 className={styles.title}>Simple Cropper</h1>
+    <main className="max-w-150 mr-auto sm:mx-auto p-6 pr-12 sm:pr-6 relative page-edge-fade">
+      <h1 className="text-center mb-4 text-[1.3rem]">Simple Cropper</h1>
       <CropperApp />
     </main>
   );

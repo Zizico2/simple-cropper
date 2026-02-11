@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
-import "@cloudflare/kumo/styles/standalone";
 
 export const metadata: Metadata = {
   title: "Simple Image Cropper",
@@ -19,8 +19,18 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`
+            (function() {
+              const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+              document.documentElement.setAttribute('data-mode', isDark ? 'dark' : 'light');
+            })();
+          `}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }
