@@ -17,7 +17,7 @@ A lightweight, client-side image cropping tool built with modern web technologie
 | Language | TypeScript (strict mode) |
 | Runtime | [Cloudflare Workers](https://workers.cloudflare.com/) (edge) |
 | Package Manager | [Bun](https://bun.sh/) |
-| Styling | CSS Modules + CSS custom properties |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/) + [class-variance-authority](https://cva.style/) |
 | UI Components | [Kumo](https://github.com/cloudflare/kumo) |
 | Linting & Formatting | [Biome](https://biomejs.dev/) |
 | Deployment | [Cloudflare Workers](https://workers.cloudflare.com/) via [OpenNext](https://opennext.js.org/) |
@@ -30,7 +30,7 @@ A lightweight, client-side image cropping tool built with modern web technologie
 - **TypeScript strict mode** — `strict: true` in `tsconfig.json` for maximum type safety
 - **React Compiler** enabled (`reactCompiler: true`) for automatic memoization and optimized re-renders
 - **Biome** for unified linting and formatting with zero-config recommended rules, including React and Next.js domain rules
-- **CSS Modules** for scoped, collision-free styling with no runtime CSS-in-JS overhead
+- **Tailwind CSS v4** for utility-first styling with zero runtime overhead, combined with **class-variance-authority (CVA)** for type-safe, variant-based component styles
 - **Clean component architecture** — small, focused components (`ImageUpload`, `CropperApp`) with clear separation of concerns; utility logic (`downloadCrop`) isolated from UI
 
 ### Deployment & CI/CD
