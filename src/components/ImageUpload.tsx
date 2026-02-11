@@ -28,8 +28,8 @@ export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
       {...getRootProps()}
       className={`border-2 border-dashed rounded-lg p-10 relative text-center cursor-pointer transition-[border-color,background-color] duration-200 ${
         isDragActive
-          ? "border-[var(--accent)] bg-[var(--accent-tint)] text-[var(--accent)]"
-          : "border-[var(--border-faint)] bg-[var(--surface-tint)] text-[var(--foreground-subtle)] hover:border-[var(--border-hover)]"
+          ? "border-(--accent) bg-(--accent-tint) text-(--accent)"
+          : "border-(--border-faint) bg-(--surface-tint) text-(--foreground-subtle) hover:border-(--border-hover)"
       }`}
     >
       <input {...getInputProps()} />

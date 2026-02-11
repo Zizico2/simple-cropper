@@ -75,7 +75,7 @@ export default function CropperApp() {
   return (
     <>
       <div className="flex items-center flex-wrap gap-2 mb-4">
-        <p className="text-[0.85rem] text-[var(--foreground-muted)]">
+        <p className="text-[0.85rem] text-(--foreground-muted)">
           {imageData ? (
             <>
               Format: <strong>{imageData.file.type}</strong> &middot; Saving as:{" "}
