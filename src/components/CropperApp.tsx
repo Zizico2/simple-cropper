@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-
 import { useState } from "react";
 import ReactCrop, { type Crop, type PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "@cloudflare/kumo/components/button";
+import { cva } from "class-variance-authority";
 import { downloadCrop } from "../utils/downloadCrop";
 import ImageUpload from "./ImageUpload";
 
@@ -15,6 +15,11 @@ interface ImageData {
   width: number;
   height: number;
 }
+
+const toolbarStyles = cva(["flex items-center flex-wrap gap-2 mb-4"]);
+const infoTextStyles = cva(["text-[0.85rem] text-(--foreground-muted)"]);
+const buttonGroupStyles = cva(["flex gap-2 ml-auto"]);
+const cropImageStyles = cva(["block max-w-full h-auto"]);
 
 export default function CropperApp() {
   const [imageData, setImageData] = useState<ImageData | null>(null);
@@ -74,8 +79,8 @@ export default function CropperApp() {
 
   return (
     <>
-      <div className="flex items-center flex-wrap gap-2 mb-4">
-        <p className="text-[0.85rem] text-(--foreground-muted)">
+      <div className={toolbarStyles()}>
+        <p className={infoTextStyles()}>
           {imageData ? (
             <>
               Format: <strong>{imageData.file.type}</strong> &middot; Saving as:{" "}
@@ -86,7 +91,7 @@ export default function CropperApp() {
           )}
         </p>
 
-        <div className="flex gap-2 ml-auto">
+        <div className={buttonGroupStyles()}>
           <Button
             onClick={onDownload}
             disabled={isProcessing || !completedCrop}
@@ -122,7 +127,7 @@ export default function CropperApp() {
             width={imageData.width}
             height={imageData.height}
             crossOrigin="anonymous"
-            className="block max-w-full h-auto"
+            className={cropImageStyles()}
             unoptimized
           />
         </ReactCrop>
