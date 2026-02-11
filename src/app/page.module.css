@@ -8,10 +8,10 @@
 .container::after {
   content: "";
   position: fixed;
-  right: -100px;
-  top: -100px;
-  bottom: -100px;
-  width: calc(100px + 2.4rem);
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(2.4rem + env(safe-area-inset-right));
   background: rgba(0, 0, 0, 0.05);
   pointer-events: none;
 }
