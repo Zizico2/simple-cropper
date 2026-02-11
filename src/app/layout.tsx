@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import "@cloudflare/kumo/styles/standalone";
 
 export const metadata: Metadata = {
   title: "Simple Image Cropper",

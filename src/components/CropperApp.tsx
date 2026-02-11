@@ -7,7 +7,6 @@ import ReactCrop, { type Crop, type PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "@cloudflare/kumo/components/button";
 import { downloadCrop } from "../utils/downloadCrop";
-import styles from "./CropperApp.module.css";
 import ImageUpload from "./ImageUpload";
 
 interface ImageData {
@@ -75,8 +74,8 @@ export default function CropperApp() {
 
   return (
     <>
-      <div className={styles.toolbar}>
-        <p className={styles.infoText}>
+      <div className="flex items-center flex-wrap gap-2 mb-4">
+        <p className="text-[0.85rem] text-[var(--foreground-muted)]">
           {imageData ? (
             <>
               Format: <strong>{imageData.file.type}</strong> &middot; Saving as:{" "}
@@ -87,7 +86,7 @@ export default function CropperApp() {
           )}
         </p>
 
-        <div className={styles.toolbarActions}>
+        <div className="flex gap-2 ml-auto">
           <Button
             onClick={onDownload}
             disabled={isProcessing || !completedCrop}
@@ -123,7 +122,7 @@ export default function CropperApp() {
             width={imageData.width}
             height={imageData.height}
             crossOrigin="anonymous"
-            className={styles.cropImage}
+            className="block max-w-full h-auto"
             unoptimized
           />
         </ReactCrop>

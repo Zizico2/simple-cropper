@@ -1,7 +1,6 @@
 "use client";
 
 import { useDropzone } from "react-dropzone";
-import styles from "./ImageUpload.module.css";
 
 interface ImageUploadProps {
   onImageSelected: (url: string, file: File) => void;
@@ -27,17 +26,23 @@ export default function ImageUpload({ onImageSelected }: ImageUploadProps) {
   return (
     <div
       {...getRootProps()}
-      className={`${styles.dropzone} ${isDragActive ? styles.active : ""}`}
+      className={`border-2 border-dashed rounded-lg p-10 relative text-center cursor-pointer transition-[border-color,background-color] duration-200 ${
+        isDragActive
+          ? "border-[var(--accent)] bg-[var(--accent-tint)] text-[var(--accent)]"
+          : "border-[var(--border-faint)] bg-[var(--surface-tint)] text-[var(--foreground-subtle)] hover:border-[var(--border-hover)]"
+      }`}
     >
       <input {...getInputProps()} />
-      <p className={`${styles.text} ${isDragActive ? styles.hidden : ""}`}>
+      <p className={`text-base mb-2 ${isDragActive ? "invisible" : ""}`}>
         Drag & drop an image here, or click to select
       </p>
-      <p className={`${styles.subtext} ${isDragActive ? styles.hidden : ""}`}>
+      <p
+        className={`text-[0.85rem] opacity-70 ${isDragActive ? "invisible" : ""}`}
+      >
         Supports JPG, PNG, WEBP, BMP
       </p>
       <p
-        className={`${styles.text} ${styles.dragMessage} ${isDragActive ? "" : styles.hidden}`}
+        className={`text-base absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${isDragActive ? "" : "invisible"}`}
       >
         Drop the image here ...
       </p>
