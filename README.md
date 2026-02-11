@@ -58,6 +58,5 @@ bun run preview
 src/
 ├── app/                  # Next.js App Router pages & global styles
 ├── components/           # React components
-├── types/                # TypeScript type declarations
 └── utils/                # Pure utility functions
 ```
