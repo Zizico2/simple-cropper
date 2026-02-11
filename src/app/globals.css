@@ -1,5 +1,7 @@
-@import "tailwindcss";
+@source "../../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
 @import "@cloudflare/kumo/styles/tailwind";
+@import "tailwindcss";
+
 
 @layer base {
   :root {
