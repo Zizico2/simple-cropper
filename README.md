@@ -2,7 +2,7 @@
 
 A lightweight, client-side image cropping tool built with modern web technologies. Upload an image via drag-and-drop or file picker, visually select a crop region, and download the result — all processed in the browser with no server round-trips.
 
-[https://simple-image-cropper.bernardobordadagua.com/](https://simple-image-cropper.bernardobordadagua.com)
+[https://simple-image-cropper.bernardobordadagua.com](https://simple-image-cropper.bernardobordadagua.com)
 
 ## Features
 
